@@ -4,7 +4,7 @@ import {
   IncomingMessage,
   InitMessageType,
   SupportedMessage,
-  UpVoteMessageType,
+  //   UpVoteMessageType,
   UserMessageType,
 } from "./message";
 import { UserManager } from "./UserManager";
