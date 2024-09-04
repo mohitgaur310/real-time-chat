@@ -1,7 +1,7 @@
 import { Room, UserId } from "../interface/chat.interface";
 import { Store } from "./store";
 let globalChatId = 0;
-class InMemoryStore implements Store {
+export class InMemoryStore implements Store {
   private store: Map<string, Room>;
   constructor() {
     this.store = new Map<string, Room>();

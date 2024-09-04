@@ -1,7 +1,18 @@
-import { server as WebSocketServer } from "websocket";
+import { connection, server as WebSocketServer } from "websocket";
 import http from "http";
+import {
+  IncomingMessage,
+  InitMessageType,
+  SupportedMessage,
+  UpVoteMessageType,
+  UserMessageType,
+} from "./message";
+import { UserManager } from "./UserManager";
+import { InMemoryStore } from "./Store/InMemoryStore";
 
-let server = http.createServer(function (request: any, response: any) {
+const userManager = new UserManager();
+const store = new InMemoryStore();
+const server = http.createServer(function (request: any, response: any) {
   console.log(new Date() + " Received request for " + request.url);
   response.writeHead(404);
   response.end();
@@ -39,13 +50,13 @@ wsServer.on("request", function (request: any) {
   console.log(new Date() + " Connection accepted.");
   connection.on("message", function (message: any) {
     if (message.type === "utf8") {
+      try {
+        messageHandler(connection, JSON.parse(message.utf8Data));
+      } catch (error) {
+        console.log("🚀 ~ error:", error);
+      }
       console.log("Received Message: " + message.utf8Data);
       connection.sendUTF(message.utf8Data);
-    } else if (message.type === "binary") {
-      console.log(
-        "Received Binary Message of " + message.binaryData.length + " bytes"
-      );
-      connection.sendBytes(message.binaryData);
     }
   });
   connection.on("close", function (reasonCode: any, description: any) {
@@ -54,3 +65,18 @@ wsServer.on("request", function (request: any) {
     );
   });
 });
+
+function messageHandler(ws: connection, message: IncomingMessage) {
+  if (message.type == SupportedMessage.JoinRoom) {
+    const payload = message.payload;
+    userManager.addUser(payload.name, payload.userId, payload.roomId, ws);
+  } else if (message.type === SupportedMessage.SendMessage) {
+    const payload = message.payload;
+    const user = userManager.getUser(payload.roomId, payload.userId);
+    if (!user) {
+      console.log("user not found in db");
+      return;
+    }
+    // store.addChats(payload.userId,payload.);
+  }
+}
