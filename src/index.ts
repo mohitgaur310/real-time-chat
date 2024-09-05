@@ -4,9 +4,13 @@ import {
   IncomingMessage,
   InitMessageType,
   SupportedMessage,
-  UpVoteMessageType,
+  UpvoteMessageType,
   UserMessageType,
 } from "./messages/incomingMessage";
+import {
+  OutgoingMessage,
+  SupportedMessage as OutgoingSupportMessages,
+} from "./messages/outgoingMessages";
 import { UserManager } from "./UserManager";
 import { InMemoryStore } from "./Store/InMemoryStore";
 
@@ -28,7 +32,7 @@ let wsServer = new WebSocketServer({
   // facilities built into the protocol and the browser.  You should
   // *always* verify the connection's origin and decide whether or not
   // to accept it.
-  autoAcceptConnections: false,
+  autoAcceptConnections: true,
 });
 
 function originIsAllowed(origin: string) {
@@ -77,15 +81,41 @@ function messageHandler(ws: connection, message: IncomingMessage) {
       console.log("user not found in db");
       return;
     }
-    store.addChats(
+    let chat = store.addChats(
       payload.userId,
       payload.name,
       payload.roomId,
       payload.message
     );
+    if (!chat) {
+      return null;
+    }
+    const outgoingPayload: OutgoingMessage = {
+      type: OutgoingSupportMessages.AddChat,
+      payload: {
+        chatId: chat.id,
+        roomId: payload.roomId,
+        message: payload.message,
+        name: user.name,
+        upvotes: 0,
+      },
+    };
+    userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
   }
   if (message.type === SupportedMessage.UpvoteMessage) {
     const payload = message.payload;
-    store.upVote(payload.userId, payload.roomId, payload.chatId);
+    let chat = store.upVote(payload.userId, payload.roomId, payload.chatId);
+    if (!chat) {
+      return null;
+    }
+    const outgoingPayload: OutgoingMessage = {
+      type: OutgoingSupportMessages.UpdateChat,
+      payload: {
+        chatId: payload.chatId,
+        roomId: payload.roomId,
+        upvotes: chat.upVotes.length,
+      },
+    };
+    userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
   }
 }
