@@ -4,9 +4,9 @@ import {
   IncomingMessage,
   InitMessageType,
   SupportedMessage,
-  //   UpVoteMessageType,
+  UpVoteMessageType,
   UserMessageType,
-} from "./message";
+} from "./messages/incomingMessage";
 import { UserManager } from "./UserManager";
 import { InMemoryStore } from "./Store/InMemoryStore";
 
@@ -77,6 +77,15 @@ function messageHandler(ws: connection, message: IncomingMessage) {
       console.log("user not found in db");
       return;
     }
-    // store.addChats(payload.userId,payload.);
+    store.addChats(
+      payload.userId,
+      payload.name,
+      payload.roomId,
+      payload.message
+    );
+  }
+  if (message.type === SupportedMessage.UpvoteMessage) {
+    const payload = message.payload;
+    store.upVote(payload.userId, payload.roomId, payload.chatId);
   }
 }

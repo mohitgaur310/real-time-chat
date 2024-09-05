@@ -36,4 +36,6 @@ export class UserManager {
     const user = this.rooms.get(roomId)?.users.find(({ id }) => id === userId);
     return user ?? null;
   }
+
+  //   broadcast(roomId:string, message)
 }

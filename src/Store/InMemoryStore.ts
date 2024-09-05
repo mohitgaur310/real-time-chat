@@ -27,8 +27,8 @@ export class InMemoryStore implements Store {
     name: string,
     message: string,
     roomId: string,
-    limit: number,
-    offset: number
+    limit?: number,
+    offset?: number
   ) {
     const room = this.store.get(roomId);
     if (!room) {
