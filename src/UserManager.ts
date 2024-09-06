@@ -50,6 +50,10 @@ export class UserManager {
     }
 
     room.users.forEach(({ conn }) => {
+      console.log(
+        "🚀 ~ UserManager ~ broadcast ~ outputmessage:",
+        JSON.stringify(message)
+      );
       conn.sendUTF(JSON.stringify(message));
     });
   }
