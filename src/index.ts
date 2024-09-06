@@ -36,8 +36,6 @@ function originIsAllowed(origin: string) {
 }
 
 wsServer.on("request", function (request: any) {
-  console.log("inside connections");
-
   if (!originIsAllowed(request.origin)) {
     // Make sure we only accept requests from an allowed origin
     request.reject();
