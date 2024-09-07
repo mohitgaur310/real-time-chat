@@ -31,7 +31,6 @@ let wsServer = new WebSocketServer({
 });
 
 function originIsAllowed(origin: string) {
-  // put logic here to detect whether the specified origin is allowed.
   return true;
 }
 
