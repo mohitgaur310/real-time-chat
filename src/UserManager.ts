@@ -49,7 +49,10 @@ export class UserManager {
       return;
     }
 
-    room.users.forEach(({ conn }) => {
+    room.users.forEach(({ conn, id }) => {
+      if (id === userId) {
+        return;
+      }
       console.log(
         "🚀 ~ UserManager ~ broadcast ~ outputmessage:",
         JSON.stringify(message)

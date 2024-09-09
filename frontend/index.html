@@ -13,11 +13,18 @@
           type:"JOIN_ROOM",
           payload:{
             name:"mohit gaur",
-            userId:'1', 
+            userId:Math.floor(Math.random()*10000), 
             roomId:'2'        
           }
         }))
       };
+      ws.onmessage= function (payload){
+        try {
+          alert(payload)
+        } catch (al) {
+          console.error(al)
+        }
+      }
       function sendChat (){
         ws.send(JSON.stringify( {
           type:"SEND_MESSAGE",
@@ -32,6 +39,6 @@
     <h1>Hello world</h1>
     <input type="text" id="inputtext"></input>
     <br> 
-    <button onclick="">Hit me</button>
+    <button onclick="sendChat()">Hit me</button>
   </body>
 </html>

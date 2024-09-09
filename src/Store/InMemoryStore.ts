@@ -30,7 +30,12 @@ export class InMemoryStore implements Store {
     limit?: number,
     offset?: number
   ) {
+    if (!this.store.get(roomId)) {
+      this.initRoom(roomId);
+    }
     const room = this.store.get(roomId);
+    console.log(this.store);
+
     if (!room) {
       return null;
     }
